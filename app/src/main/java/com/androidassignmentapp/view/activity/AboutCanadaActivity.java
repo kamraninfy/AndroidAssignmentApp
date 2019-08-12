@@ -1,16 +1,12 @@
 package com.androidassignmentapp.view.activity;
 
-import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-
 
 import com.androidassignmentapp.R;
 import com.androidassignmentapp.databinding.ActivityAboutCanadaBinding;
@@ -60,6 +56,7 @@ public class AboutCanadaActivity extends AppCompatActivity implements Observer {
 
     /**
      * Method which will add observer to observable
+     *
      * @param observable
      */
     public void setUpObserver(Observable observable) {
@@ -69,7 +66,7 @@ public class AboutCanadaActivity extends AppCompatActivity implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if(o instanceof AboutCanadaViewModel) {
+        if (o instanceof AboutCanadaViewModel) {
             AboutCanadaAdapter aboutCanadaAdapter = (AboutCanadaAdapter) activityAboutCanadaBinding.listUser.getAdapter();
             AboutCanadaViewModel aboutCanadaViewModel = (AboutCanadaViewModel) o;
             aboutCanadaAdapter.setUserList(aboutCanadaViewModel.getUserList());
@@ -88,9 +85,11 @@ public class AboutCanadaActivity extends AppCompatActivity implements Observer {
     /**
      * onDestroy Method - It would be called when activity is destroyed
      */
-    @Override protected void onDestroy() {
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
         aboutCanadaViewModel.reset();
     }
+
 
 }

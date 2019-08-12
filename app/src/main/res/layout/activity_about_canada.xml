@@ -6,7 +6,9 @@
 
 
     <data>
+
         <import type="android.view.View" />
+
         <variable
             name="aboutCanadaViewModel"
             type="com.androidassignmentapp.viewModel.AboutCanadaViewModel" />
@@ -47,19 +49,27 @@
                     android:text="@{aboutCanadaViewModel.messageLabel}"
                     app:visibility="@{aboutCanadaViewModel.userLabel}" />
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/list_user"
+
+                <android.support.v4.widget.SwipeRefreshLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/colorWhite"
-                    android:clipToPadding="false"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:scrollbars="vertical"
-                    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                    app:visibility="@{aboutCanadaViewModel.userRecycler}"
-                    tools:listitem="@layout/item_canada_" />
+                    app:refreshing="@{aboutCanadaViewModel.isLoading}"
+                    android:id="@+id/swipe_container"
+                    app:onRefreshListener="@{() -> aboutCanadaViewModel.onRefresh()}">
 
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/list_user"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/colorWhite"
+                        android:clipToPadding="false"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:scrollbars="vertical"
+                        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                        app:visibility="@{aboutCanadaViewModel.userRecycler}"
+                        tools:listitem="@layout/item_canada_" />
+                </android.support.v4.widget.SwipeRefreshLayout>
 
             </LinearLayout>
 

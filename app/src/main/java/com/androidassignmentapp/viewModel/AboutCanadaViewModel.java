@@ -1,6 +1,7 @@
 package com.androidassignmentapp.viewModel;
 
 import android.content.Context;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.net.ConnectivityManager;
@@ -45,6 +46,12 @@ public class AboutCanadaViewModel extends Observable {
     private Context context;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
+    public ObservableBoolean getIsLoading() {
+        return isLoading;
+    }
+
+    private ObservableBoolean isLoading;
+
     public AboutCanadaViewModel(@NonNull Context context) {
         this.context = context;
         this.userList = new ArrayList<>();
@@ -54,8 +61,7 @@ public class AboutCanadaViewModel extends Observable {
         userLabel = new ObservableInt(View.VISIBLE);
         messageLabel = new ObservableField<>(context.getString(R.string.default_message_loading_users));
         messageheader = new ObservableField<>(context.getString(R.string.app_name));
-        ;
-
+        isLoading = new ObservableBoolean();
 
         if (isConnected()) {
             initializeViews();
@@ -97,6 +103,10 @@ public class AboutCanadaViewModel extends Observable {
                     @Override
                     public void accept(CountryFactsModels userResponse) throws Exception {
 
+                        Log.e("LOADING","1");
+
+                        isLoading.set(false);
+
                         //Data Response
                         updateActionBartitle(userResponse.getTitle());
 
@@ -108,6 +118,10 @@ public class AboutCanadaViewModel extends Observable {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
+
+                        Log.e("LOADING","2");
+
+                        isLoading.set(false);
 
                         //Would be called when API throws an exception
                         messageLabel.set(context.getString(R.string.error_message_loading_users));
@@ -133,9 +147,10 @@ public class AboutCanadaViewModel extends Observable {
 
     /**
      * Method to Check Internet Connection
+     *
      * @return false if internet is not connected
      */
-    public boolean isConnected() {
+    private boolean isConnected() {
         boolean connected = false;
         try {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -167,5 +182,12 @@ public class AboutCanadaViewModel extends Observable {
         compositeDisposable = null;
         context = null;
     }
+
+    /* Needs to be public for Databinding */
+    public void onRefresh() {
+        isLoading.set(true);
+        fetchListApi();
+    }
+
 }
 
