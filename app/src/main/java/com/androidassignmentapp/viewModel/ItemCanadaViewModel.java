@@ -10,6 +10,7 @@ import com.androidassignmentapp.model.Row;
 import com.bumptech.glide.Glide;
 
 /**
+ * Row Item Class
  */
 
 public class ItemCanadaViewModel extends BaseObservable {

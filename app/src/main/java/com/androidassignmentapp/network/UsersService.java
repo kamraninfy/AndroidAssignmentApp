@@ -8,7 +8,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Url;
 
 /**
- * Created by Ahmad Shubita on 8/1/17.
+ * Class which will write the API and URLs and make service call.
  */
 
 public interface UsersService {

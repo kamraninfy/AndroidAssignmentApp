@@ -1,7 +1,7 @@
 package com.androidassignmentapp.utils;
 
 /**
- * Created by Ahmad Shubita on 8/1/17.
+ * Constant class to handle the user defined constants
  */
 
 public interface Constant {

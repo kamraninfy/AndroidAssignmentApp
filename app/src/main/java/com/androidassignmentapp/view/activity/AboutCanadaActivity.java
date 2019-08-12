@@ -21,6 +21,10 @@ import com.androidassignmentapp.viewModel.AboutCanadaViewModel;
 import java.util.Observable;
 import java.util.Observer;
 
+
+/**
+ * Class to show the UI and handle the response
+ */
 public class AboutCanadaActivity extends AppCompatActivity implements Observer {
 
     private ActivityAboutCanadaBinding activityAboutCanadaBinding;
@@ -29,12 +33,18 @@ public class AboutCanadaActivity extends AppCompatActivity implements Observer {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Databinding
         initDataBinding();
+
         setSupportActionBar(activityAboutCanadaBinding.toolbar);
         setUpListOfUsersView(activityAboutCanadaBinding.listUser);
         setUpObserver(aboutCanadaViewModel);
     }
 
+    /**
+     * Method which will initialise the data binding of particular view
+     */
     private void initDataBinding() {
         activityAboutCanadaBinding = DataBindingUtil.setContentView(this, R.layout.activity_about_canada);
         aboutCanadaViewModel = new AboutCanadaViewModel(this);
@@ -48,6 +58,10 @@ public class AboutCanadaActivity extends AppCompatActivity implements Observer {
         listUser.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    /**
+     * Method which will add observer to observable
+     * @param observable
+     */
     public void setUpObserver(Observable observable) {
         observable.addObserver(this);
     }
@@ -62,12 +76,18 @@ public class AboutCanadaActivity extends AppCompatActivity implements Observer {
         }
     }
 
+
+    /**
+     * Method
+     */
     private void startActivityActionView() {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constant.PROJECT_URL)));
     }
 
 
-
+    /**
+     * onDestroy Method - It would be called when activity is destroyed
+     */
     @Override protected void onDestroy() {
         super.onDestroy();
         aboutCanadaViewModel.reset();

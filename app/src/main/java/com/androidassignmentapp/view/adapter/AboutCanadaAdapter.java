@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Ahmad Shubita on 8/04/17.
+ * Adapter for recyclerview for About Canada Activity
  */
 
 public class AboutCanadaAdapter extends RecyclerView.Adapter<AboutCanadaAdapter.UserAdapterViewHolder> {

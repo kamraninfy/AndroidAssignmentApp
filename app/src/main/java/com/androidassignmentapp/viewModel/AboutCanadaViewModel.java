@@ -28,6 +28,7 @@ import io.reactivex.functions.Consumer;
 import static com.androidassignmentapp.utils.Constant.RANDOM_USER_URL;
 
 /**
+ * ViewModel for handling logic for About Canada Activity class
  */
 
 public class AboutCanadaViewModel extends Observable {
@@ -58,7 +59,7 @@ public class AboutCanadaViewModel extends Observable {
 
         if (isConnected()) {
             initializeViews();
-            fetchUsersList();
+            fetchListApi();
         } else {
             messageLabel.set(context.getString(R.string.error_message_loading_internet));
             progressBar.set(View.GONE);
@@ -70,17 +71,21 @@ public class AboutCanadaViewModel extends Observable {
 
     /*public void onClickFabToLoad(View view) {
         initializeViews();
-        fetchUsersList();
+        fetchListApi();
     }*/
 
-    //It is "public" to show an example of test
+    //It is for initlialising views
     public void initializeViews() {
         userLabel.set(View.GONE);
         userRecycler.set(View.GONE);
         progressBar.set(View.VISIBLE);
     }
 
-    private void fetchUsersList() {
+
+    /**
+     * Method to class API to get canada list
+     */
+    private void fetchListApi() {
 
         AppController appController = AppController.create(context);
         UsersService usersService = appController.getUserService();
@@ -92,8 +97,7 @@ public class AboutCanadaViewModel extends Observable {
                     @Override
                     public void accept(CountryFactsModels userResponse) throws Exception {
 
-
-                        Log.e("TITLE", "" + userResponse.getTitle());
+                        //Data Response
                         updateActionBartitle(userResponse.getTitle());
 
                         updateUserDataList(userResponse.getRows());
@@ -105,7 +109,7 @@ public class AboutCanadaViewModel extends Observable {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
 
-
+                        //Would be called when API throws an exception
                         messageLabel.set(context.getString(R.string.error_message_loading_users));
                         progressBar.set(View.GONE);
                         userLabel.set(View.VISIBLE);
@@ -128,7 +132,7 @@ public class AboutCanadaViewModel extends Observable {
 
 
     /**
-     * Method to Check Internet
+     * Method to Check Internet Connection
      * @return false if internet is not connected
      */
     public boolean isConnected() {
@@ -149,6 +153,9 @@ public class AboutCanadaViewModel extends Observable {
         return userList;
     }
 
+    /**
+     * This method would unsubscrible from Observable
+     */
     private void unSubscribeFromObservable() {
         if (compositeDisposable != null && !compositeDisposable.isDisposed()) {
             compositeDisposable.dispose();

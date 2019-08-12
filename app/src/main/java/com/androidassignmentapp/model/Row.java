@@ -5,6 +5,10 @@ import java.io.Serializable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+
+/**
+ * Class to handle the row class inside main model class to handle the  user response
+ */
 public class Row implements Serializable
 {
 

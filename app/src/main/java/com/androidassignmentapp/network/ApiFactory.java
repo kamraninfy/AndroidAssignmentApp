@@ -8,7 +8,7 @@ import static com.androidassignmentapp.utils.Constant.BASE_URL;
 
 
 /**
- * Created by Ahmad Shubita on 8/1/17.
+ * Class to create connection of Retrofit
  */
 
 public class ApiFactory {

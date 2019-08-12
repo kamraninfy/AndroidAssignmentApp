@@ -10,7 +10,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by Ahmad Shubita on 8/1/17.
+ *
  */
 
 public class AppController extends Application {
