@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Assignment</string>
+
+    <string name="error_message_loading_users">There seems to have been some error.</string>
+    <string name="error_message_loading_internet">Please Check Internet Connection</string>
+
+    <string name="default_message_loading_users">Press the button to load people!</string>
+    <string name="github">Github</string>
+
+</resources>
