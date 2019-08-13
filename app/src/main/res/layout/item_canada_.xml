@@ -17,12 +17,15 @@
         android:id="@+id/item_people"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/spacing_huge"
+        android:layout_marginLeft="@dimen/spacing_large"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:layout_marginRight="@dimen/spacing_large"
+        android:layout_marginBottom="@dimen/spacing_medium"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
         android:onClick="@{aboutCanadaViewModel::onItemClick}"
-        android:padding="@dimen/spacing_large"
+        android:padding="@dimen/spacing_huge"
         app:cardBackgroundColor="@color/light_blue"
         app:cardElevation="5dp">
 
@@ -31,20 +34,22 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/spacing_small"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/spacing_medium"
+            android:paddingTop="@dimen/spacing_small"
+            android:paddingRight="@dimen/spacing_small"
+            android:paddingBottom="@dimen/spacing_medium">
 
             <TextView
                 android:id="@+id/label_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/spacing_large"
-                android:layout_marginTop="@dimen/spacing_large"
+                android:layout_alignParentLeft="true"
                 android:layout_toLeftOf="@+id/image_arrow"
+                android:gravity="left|top"
                 android:text="@{aboutCanadaViewModel.title}"
                 android:textColor="@color/royal_blue_text"
-                android:textSize="15sp"
-                tools:ignore="RtlCompat"
+                android:textSize="@dimen/heading_textsize"
                 tools:text="TITLE" />
 
             <RelativeLayout
@@ -58,13 +63,11 @@
                     android:id="@+id/label_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/spacing_large"
-                    android:layout_marginBottom="@dimen/spacing_small"
                     android:layout_toLeftOf="@+id/image_people"
+                    android:gravity="left|top"
                     android:text="@{aboutCanadaViewModel.description}"
                     android:textColor="@android:color/secondary_text_light"
-                    android:textSize="15sp"
-                    tools:ignore="RtlCompat" />
+                    android:textSize="@dimen/description_textsize" />
 
                 <ImageView
                     android:id="@+id/image_people"
@@ -72,8 +75,10 @@
                     android:layout_height="80dp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentRight="true"
-                    android:layout_gravity="center"
-                    android:layout_margin="5dp"
+                    android:layout_gravity="top"
+                    android:layout_marginLeft="@dimen/spacing_small"
+                    android:layout_marginRight="@dimen/spacing_small"
+                    app:visibility="@{aboutCanadaViewModel.noimagevisible}"
                     tools:imageUrl="@{aboutCanadaViewModel.profileThumb}" />
 
             </RelativeLayout>
@@ -85,7 +90,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:layout_margin="5dp"
+                android:layout_marginRight="@dimen/spacing_small"
                 android:src="@drawable/arrow" />
 
 

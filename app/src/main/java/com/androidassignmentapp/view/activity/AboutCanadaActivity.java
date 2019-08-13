@@ -75,14 +75,6 @@ public class AboutCanadaActivity extends AppCompatActivity implements Observer {
 
 
     /**
-     * Method
-     */
-    private void startActivityActionView() {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constant.PROJECT_URL)));
-    }
-
-
-    /**
      * onDestroy Method - It would be called when activity is destroyed
      */
     @Override
@@ -90,6 +82,4 @@ public class AboutCanadaActivity extends AppCompatActivity implements Observer {
         super.onDestroy();
         aboutCanadaViewModel.reset();
     }
-
-
 }

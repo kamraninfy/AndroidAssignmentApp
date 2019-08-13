@@ -12,7 +12,7 @@ import android.view.View;
 
 
 import com.androidassignmentapp.R;
-import com.androidassignmentapp.app.AppController;
+import com.androidassignmentapp.app.CustomApplication;
 import com.androidassignmentapp.model.CountryFactsModels;
 import com.androidassignmentapp.model.Row;
 import com.androidassignmentapp.network.UsersService;
@@ -93,23 +93,22 @@ public class AboutCanadaViewModel extends Observable {
      */
     private void fetchListApi() {
 
-        AppController appController = AppController.create(context);
-        UsersService usersService = appController.getUserService();
+        CustomApplication customApplication = CustomApplication.create(context);
+        UsersService usersService = customApplication.getUserService();
 
         Disposable disposable = usersService.fetchUsers(RANDOM_USER_URL)
-                .subscribeOn(appController.subscribeScheduler())
+                .subscribeOn(customApplication.subscribeScheduler())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<CountryFactsModels>() {
                     @Override
                     public void accept(CountryFactsModels userResponse) throws Exception {
-
-                        Log.e("LOADING","1");
 
                         isLoading.set(false);
 
                         //Data Response
                         updateActionBartitle(userResponse.getTitle());
 
+                        //
                         updateUserDataList(userResponse.getRows());
                         progressBar.set(View.GONE);
                         userLabel.set(View.GONE);
@@ -118,8 +117,6 @@ public class AboutCanadaViewModel extends Observable {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-
-                        Log.e("LOADING","2");
 
                         isLoading.set(false);
 
@@ -138,10 +135,45 @@ public class AboutCanadaViewModel extends Observable {
         messageheader.set(title);
     }
 
-    private void updateUserDataList(List<Row> peoples) {
-        userList.addAll(peoples);
+    private void updateUserDataList(List<Row> rowList) {
+        userList.addAll(removedNullList(rowList));
         setChanged();
         notifyObservers();
+    }
+
+
+    /**
+     * This method would add only rows which are not null
+     * @param rowList List passed after reponse
+     * @return Null removed List
+     */
+    public List<Row> removedNullList(List<Row> rowList) {
+        List<Row> removed = new ArrayList<>();
+
+        for (int i = 0; i < rowList.size(); i++) {
+
+            if (!checkIfRowIsNull(rowList.get(i))) {
+                removed.add(rowList.get(i));
+            }
+        }
+
+        return removed;
+    }
+
+
+    /**
+     * This method will check if Condition matches that all items to be displayed are null
+     * @param row Model would be passed to check condition
+     * @return Would return true if all items are null
+     */
+    private boolean checkIfRowIsNull(Row row) {
+        boolean isRowNull = false;
+
+        if (row.getTitle() == null && row.getDescription() == null && row.getImageHref() == null) {
+            isRowNull = true;
+        }
+
+        return isRowNull;
     }
 
 
@@ -185,6 +217,7 @@ public class AboutCanadaViewModel extends Observable {
 
     /* Needs to be public for Databinding */
     public void onRefresh() {
+        this.userList.clear();
         isLoading.set(true);
         fetchListApi();
     }

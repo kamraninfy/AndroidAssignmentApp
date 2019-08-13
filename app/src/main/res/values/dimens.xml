@@ -19,4 +19,6 @@
     <dimen name="letter_small">14sp</dimen>
     <dimen name="letter_medium">16sp</dimen>
     <dimen name="letter_large">18sp</dimen>
+    <dimen name="heading_textsize">15sp</dimen>
+    <dimen name="description_textsize">14sp</dimen>
 </resources>

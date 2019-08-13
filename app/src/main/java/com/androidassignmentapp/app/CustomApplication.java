@@ -13,17 +13,17 @@ import io.reactivex.schedulers.Schedulers;
  *
  */
 
-public class AppController extends Application {
+public class CustomApplication extends Application {
 
     private UsersService usersService;
     private Scheduler scheduler;
 
-    private static AppController get(Context context) {
-        return (AppController) context.getApplicationContext();
+    private static CustomApplication get(Context context) {
+        return (CustomApplication) context.getApplicationContext();
     }
 
-    public static AppController create(Context context) {
-        return AppController.get(context);
+    public static CustomApplication create(Context context) {
+        return CustomApplication.get(context);
     }
 
     public UsersService getUserService() {

@@ -1,11 +1,6 @@
 package com.androidassignmentapp.view.activity;
 
-import android.support.annotation.NonNull;
-import android.support.test.espresso.Espresso;
-import android.support.test.espresso.ViewInteraction;
-import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.BoundedMatcher;
-import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.v7.widget.RecyclerView;
@@ -20,18 +15,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static android.support.v4.util.Preconditions.checkNotNull;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.*;
 
 @RunWith(AndroidJUnit4.class)
 public class AboutCanadaActivityTest {
@@ -57,8 +47,6 @@ public class AboutCanadaActivityTest {
 
     @Test
     public void chekIfTextContainsInRecycler(){
-        //onView(ViewMatchers.withId(R.id.list_user)).perform(RecyclerViewActions.actionOnItemAtPosition(1,click()));
-
         onView(withId(R.id.list_user)).check(matches(not(hasItem(hasDescendant(withText("ok"))))));
 
 
