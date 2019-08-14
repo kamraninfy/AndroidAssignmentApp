@@ -3,7 +3,6 @@ package com.androidassignmentapp.database.repository;
 import com.androidassignmentapp.database.dao.CountryDao;
 import com.androidassignmentapp.database.entity.CountryEntity;
 
-import java.util.List;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Observable;
@@ -33,24 +32,4 @@ public class CountryRepository implements CountryRepo{
             }
         });
     }
-
-
-//    /**
-//     *
-//     * @param saveRowEntity
-//     */
-//    @Override
-//    public void saveRowEntityInfo(List<RowEntity> saveRowEntity) {
-//        countryDao.saveCountryRowInformation(saveRowEntity);
-//    }
-//
-//    @Override
-//    public Observable<List<RowEntity>> getRowEntityInformation() {
-//        return Observable.fromCallable(new Callable<List<RowEntity>>() {
-//            @Override
-//            public List<RowEntity> call() throws Exception {
-//                return countryDao.getRowEntityInformation();
-//            }
-//        });
-//    }
 }

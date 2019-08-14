@@ -12,13 +12,13 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 
-
 import com.androidassignmentapp.R;
 import com.androidassignmentapp.app.CustomApplication;
 import com.androidassignmentapp.database.CountryDatabase;
 import com.androidassignmentapp.database.constants.DbConstants;
 import com.androidassignmentapp.database.dao.CountryDao;
 import com.androidassignmentapp.database.entity.CountryEntity;
+import com.androidassignmentapp.database.entity.RowEntity;
 import com.androidassignmentapp.database.repository.CountryRepo;
 import com.androidassignmentapp.database.repository.CountryRepository;
 import com.androidassignmentapp.model.CountryFactsModels;
@@ -36,7 +36,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
-import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.androidassignmentapp.utils.Constant.RANDOM_USER_URL;
@@ -62,11 +61,8 @@ public class AboutCanadaViewModel extends Observable {
     private Context context;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    public ObservableBoolean getIsLoading() {
-        return isLoading;
-    }
 
-    private ObservableBoolean isLoading;
+    public ObservableBoolean isLoading;
 
 
     //Room Database
@@ -93,12 +89,7 @@ public class AboutCanadaViewModel extends Observable {
             initializeViews();
             fetchListApi();
         } else {
-            messageLabel.set(context.getString(R.string.error_message_loading_internet));
-            progressBar.set(View.GONE);
-            userLabel.set(View.VISIBLE);
-            userRecycler.set(View.GONE);
-
-
+            initializeViews();
             fetchLocalApi();
         }
 
@@ -116,6 +107,32 @@ public class AboutCanadaViewModel extends Observable {
             public void accept(CountryEntity countryEntity) throws Exception {
                 updateActionBartitle(countryEntity.getTitle());
 
+                List<Row> rowList = new ArrayList<>();
+                for (int i = 0; i < countryEntity.getRows().size(); i++) {
+                    Row row = new Row();
+                    row.setTitle(countryEntity.getRows().get(i).getTitle());
+                    row.setDescription(countryEntity.getRows().get(i).getDescription());
+                    row.setImageHref(countryEntity.getRows().get(i).getImageHref() + "");
+                    rowList.add(row);
+                }
+
+                isLoading.set(false);
+
+                updateUserDataList(rowList);
+
+
+                progressBar.set(View.GONE);
+                userLabel.set(View.GONE);
+                userRecycler.set(View.VISIBLE);
+
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                messageLabel.set(context.getString(R.string.error_message_loading_internet));
+                progressBar.set(View.GONE);
+                userLabel.set(View.VISIBLE);
+                userRecycler.set(View.GONE);
             }
         });
     }
@@ -148,19 +165,20 @@ public class AboutCanadaViewModel extends Observable {
                     @Override
                     public void accept(CountryFactsModels userResponse) throws Exception {
 
-                        Log.e("hi","hi");
 
                         insertIntoLocal(userResponse);
 
-                        Log.e("hi","hi2");
 
                         isLoading.set(false);
 
                         //Data Response
                         updateActionBartitle(userResponse.getTitle());
 
+
                         //
                         updateUserDataList(userResponse.getRows());
+
+
                         progressBar.set(View.GONE);
                         userLabel.set(View.GONE);
                         userRecycler.set(View.VISIBLE);
@@ -168,7 +186,6 @@ public class AboutCanadaViewModel extends Observable {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-                        Log.e("hifa","thro"+throwable.getLocalizedMessage());
                         isLoading.set(false);
 
                         //Would be called when API throws an exception
@@ -181,6 +198,13 @@ public class AboutCanadaViewModel extends Observable {
 
         compositeDisposable.add(disposable);
     }
+
+
+    /**
+     * Insert into local database when internet is connected
+     *
+     * @param userResponse response received by API
+     */
     private void insertIntoLocal(CountryFactsModels userResponse) {
 
         Completable.fromAction(new Action() {
@@ -189,7 +213,26 @@ public class AboutCanadaViewModel extends Observable {
                 CountryEntity countryEntity = new CountryEntity();
                 countryEntity.setTitle(userResponse.getTitle());
 
+
+                List<RowEntity> rowEntities = new ArrayList<>();
+
+                for (int i = 0; i < userResponse.getRows().size(); i++) {
+                    Row userRes = userResponse.getRows().get(i);
+                    if (userRes.getTitle() != null && userRes.getDescription() != null && userRes != null) {
+                        RowEntity rowEntity = new RowEntity();
+                        rowEntity.setTitle(userRes.getTitle());
+                        rowEntity.setDescription(userRes.getDescription());
+                        rowEntity.setImageHref(userRes.getImageHref() + "");
+                        rowEntities.add(rowEntity);
+                    }
+                }
+
+                countryEntity.setRows(rowEntities);
+
                 countryRepo.saveCountryInfo(countryEntity);
+                //countryRepo.saveRowEntityInfo(rowEntities);
+
+
             }
         }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(new CompletableObserver() {
             @Override
@@ -270,7 +313,7 @@ public class AboutCanadaViewModel extends Observable {
             connected = nInfo != null && nInfo.isAvailable() && nInfo.isConnected();
             return connected;
         } catch (Exception e) {
-            Log.e("Connectivity Exception", e.getMessage());
+            e.printStackTrace();
         }
         return connected;
     }
@@ -299,7 +342,14 @@ public class AboutCanadaViewModel extends Observable {
     public void onRefresh() {
         this.userList.clear();
         isLoading.set(true);
-        fetchListApi();
+
+
+        if (isConnected()) {
+            fetchListApi();
+        } else {
+            fetchLocalApi();
+        }
+
     }
 
 }

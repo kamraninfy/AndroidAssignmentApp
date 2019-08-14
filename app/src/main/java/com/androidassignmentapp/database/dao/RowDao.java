@@ -6,16 +6,17 @@ import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
 import com.androidassignmentapp.database.constants.DbConstants;
+import com.androidassignmentapp.database.entity.RowEntity;
 
 import java.util.List;
 
 @Dao
 public interface RowDao {
 
-//    @Query("SELECT * FROM " + DbConstants.TABLE_NAME_ROW)
-//    List<RowEntity> getRowEntityInformation();
-//
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    void saveCountryRowInformation(List<RowEntity> saveRowEntityList);
+    @Query("SELECT * FROM " + DbConstants.TABLE_NAME_ROW)
+    List<RowEntity> getRowEntityInformation();
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void saveCountryRowInformation(List<RowEntity> saveRowEntityList);
 
 }
