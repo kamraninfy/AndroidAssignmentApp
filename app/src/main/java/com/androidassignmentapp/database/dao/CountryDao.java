@@ -1,14 +1,12 @@
 package com.androidassignmentapp.database.dao;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 
+import com.androidassignmentapp.database.constants.DbConstants;
 import com.androidassignmentapp.database.entity.CountryEntity;
-
-import java.util.List;
 
 /**
  * File Description
@@ -16,10 +14,11 @@ import java.util.List;
  */
 @Dao
 public interface CountryDao {
-    @Query("SELECT * FROM country_information")
-    LiveData<List<CountryEntity>> loadPopularArticles();
+    @Query("SELECT * FROM " + DbConstants.TABLE_NAME_COUNTRY)
+    CountryEntity getCountryInformation();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void saveCountryInformation(List<CountryEntity> saveCountryInformation);
+    void saveAboutCountry(CountryEntity saveCountryEntity);
+
 
 }

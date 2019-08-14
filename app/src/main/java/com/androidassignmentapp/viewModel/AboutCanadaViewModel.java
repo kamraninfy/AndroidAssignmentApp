@@ -1,5 +1,7 @@
 package com.androidassignmentapp.viewModel;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
@@ -13,6 +15,12 @@ import android.view.View;
 
 import com.androidassignmentapp.R;
 import com.androidassignmentapp.app.CustomApplication;
+import com.androidassignmentapp.database.CountryDatabase;
+import com.androidassignmentapp.database.constants.DbConstants;
+import com.androidassignmentapp.database.dao.CountryDao;
+import com.androidassignmentapp.database.entity.CountryEntity;
+import com.androidassignmentapp.database.repository.CountryRepo;
+import com.androidassignmentapp.database.repository.CountryRepository;
 import com.androidassignmentapp.model.CountryFactsModels;
 import com.androidassignmentapp.model.Row;
 import com.androidassignmentapp.network.UsersService;
@@ -21,10 +29,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.androidassignmentapp.utils.Constant.RANDOM_USER_URL;
 
@@ -33,6 +46,9 @@ import static com.androidassignmentapp.utils.Constant.RANDOM_USER_URL;
  */
 
 public class AboutCanadaViewModel extends Observable {
+
+    private final CountryDatabase db;
+    CountryRepo countryRepo;
 
     public ObservableInt progressBar;
     public ObservableInt userRecycler;
@@ -52,9 +68,19 @@ public class AboutCanadaViewModel extends Observable {
 
     private ObservableBoolean isLoading;
 
+
+    //Room Database
+    private LiveData<List<CountryEntity>> mTasks;
+    private CountryDao mTaskDao;
+
+
     public AboutCanadaViewModel(@NonNull Context context) {
         this.context = context;
         this.userList = new ArrayList<>();
+
+        //Database
+        db = Room.databaseBuilder(context, CountryDatabase.class, DbConstants.DB_NAME).build();
+        countryRepo = new CountryRepository(db.countryDao());
 
         progressBar = new ObservableInt(View.GONE);
         userRecycler = new ObservableInt(View.GONE);
@@ -71,8 +97,27 @@ public class AboutCanadaViewModel extends Observable {
             progressBar.set(View.GONE);
             userLabel.set(View.VISIBLE);
             userRecycler.set(View.GONE);
+
+
+            fetchLocalApi();
         }
 
+    }
+
+
+    /**
+     * Method which would fetch data locally if internet is not connected
+     */
+    private void fetchLocalApi() {
+
+
+        countryRepo.getAllCountryInfo().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<CountryEntity>() {
+            @Override
+            public void accept(CountryEntity countryEntity) throws Exception {
+                updateActionBartitle(countryEntity.getTitle());
+
+            }
+        });
     }
 
     /*public void onClickFabToLoad(View view) {
@@ -103,6 +148,12 @@ public class AboutCanadaViewModel extends Observable {
                     @Override
                     public void accept(CountryFactsModels userResponse) throws Exception {
 
+                        Log.e("hi","hi");
+
+                        insertIntoLocal(userResponse);
+
+                        Log.e("hi","hi2");
+
                         isLoading.set(false);
 
                         //Data Response
@@ -117,7 +168,7 @@ public class AboutCanadaViewModel extends Observable {
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
-
+                        Log.e("hifa","thro"+throwable.getLocalizedMessage());
                         isLoading.set(false);
 
                         //Would be called when API throws an exception
@@ -129,6 +180,33 @@ public class AboutCanadaViewModel extends Observable {
                 });
 
         compositeDisposable.add(disposable);
+    }
+    private void insertIntoLocal(CountryFactsModels userResponse) {
+
+        Completable.fromAction(new Action() {
+            @Override
+            public void run() throws Exception {
+                CountryEntity countryEntity = new CountryEntity();
+                countryEntity.setTitle(userResponse.getTitle());
+
+                countryRepo.saveCountryInfo(countryEntity);
+            }
+        }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(new CompletableObserver() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+        });
     }
 
     private void updateActionBartitle(String title) {
@@ -144,6 +222,7 @@ public class AboutCanadaViewModel extends Observable {
 
     /**
      * This method would add only rows which are not null
+     *
      * @param rowList List passed after reponse
      * @return Null removed List
      */
@@ -163,6 +242,7 @@ public class AboutCanadaViewModel extends Observable {
 
     /**
      * This method will check if Condition matches that all items to be displayed are null
+     *
      * @param row Model would be passed to check condition
      * @return Would return true if all items are null
      */

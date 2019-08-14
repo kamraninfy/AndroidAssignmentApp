@@ -4,6 +4,7 @@ import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 
 import com.androidassignmentapp.database.dao.CountryDao;
+import com.androidassignmentapp.database.dao.RowDao;
 import com.androidassignmentapp.database.entity.CountryEntity;
 
 /**
@@ -12,5 +13,9 @@ import com.androidassignmentapp.database.entity.CountryEntity;
  */
 @Database(entities = {CountryEntity.class}, version = 1,exportSchema = false)
 public abstract class CountryDatabase extends RoomDatabase {
+
     public abstract CountryDao countryDao();
+    public abstract RowDao rowDao();
+
+
 }
