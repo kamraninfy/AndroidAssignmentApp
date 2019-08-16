@@ -27,8 +27,8 @@ import static org.hamcrest.CoreMatchers.not;
 public class AboutCanadaActivityTest {
 
     @Rule
-    public ActivityTestRule<AboutCanadaActivity> mActivityRule =
-            new ActivityTestRule<>(AboutCanadaActivity.class);
+    public ActivityTestRule<AboutCanadaFragmentActivity> mActivityRule =
+            new ActivityTestRule<>(AboutCanadaFragmentActivity.class);
 
 
     @Test
