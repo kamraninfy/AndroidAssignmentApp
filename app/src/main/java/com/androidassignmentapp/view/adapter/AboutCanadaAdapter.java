@@ -3,18 +3,17 @@ package com.androidassignmentapp.view.adapter;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-
 
 import com.androidassignmentapp.R;
 import com.androidassignmentapp.databinding.ItemCanadaBinding;
-import com.androidassignmentapp.model.CountryFactsModels;
 import com.androidassignmentapp.model.Row;
 import com.androidassignmentapp.viewModel.ItemCanadaViewModel;
 
 import java.util.Collections;
 import java.util.List;
+
+import io.reactivex.annotations.NonNull;
 
 /**
  * Adapter for recyclerview for About Canada Activity
@@ -28,36 +27,20 @@ public class AboutCanadaAdapter extends RecyclerView.Adapter<AboutCanadaAdapter.
         this.userList = Collections.emptyList();
     }
 
+    @NonNull
     @Override
-    public UserAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public UserAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent,@NonNull int viewType) {
 
         ItemCanadaBinding itemUserBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_canada_, parent, false);
-
-
         return new UserAdapterViewHolder(itemUserBinding);
     }
 
 
-    private void hideData(int position, UserAdapterViewHolder holder) {
-        Row row = userList.get(position);
-
-        if (row.getTitle() == null && row.getDescription() == null && row.getImageHref() == null) {
-            holder.itemView.setVisibility(View.GONE);
-            holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
-        } else {
-            holder.itemView.setVisibility(View.VISIBLE);
-            holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        }
-    }
-
+    @NonNull
     @Override
-    public void onBindViewHolder(UserAdapterViewHolder holder, int position) {
-
+    public void onBindViewHolder(@NonNull UserAdapterViewHolder holder,@NonNull int position) {
         //Sets Data
         holder.bindUser(userList.get(position));
-
-        //hideData(position, holder);
-
     }
 
     @Override
@@ -70,11 +53,11 @@ public class AboutCanadaAdapter extends RecyclerView.Adapter<AboutCanadaAdapter.
         notifyDataSetChanged();
     }
 
-    public static class UserAdapterViewHolder extends RecyclerView.ViewHolder {
+     static class UserAdapterViewHolder extends RecyclerView.ViewHolder {
 
         ItemCanadaBinding mItemUserBinding;
 
-        public UserAdapterViewHolder(ItemCanadaBinding itemUserBinding) {
+        private UserAdapterViewHolder(ItemCanadaBinding itemUserBinding) {
             super(itemUserBinding.itemPeople);
             this.mItemUserBinding = itemUserBinding;
         }

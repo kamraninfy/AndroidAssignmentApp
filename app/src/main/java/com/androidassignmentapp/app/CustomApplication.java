@@ -9,10 +9,6 @@ import com.androidassignmentapp.network.UsersService;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 
-/**
- *
- */
-
 public class CustomApplication extends Application {
 
     private UsersService usersService;
@@ -30,7 +26,6 @@ public class CustomApplication extends Application {
         if (usersService == null) {
             usersService = ApiFactory.create();
         }
-
         return usersService;
     }
 
@@ -38,16 +33,6 @@ public class CustomApplication extends Application {
         if (scheduler == null) {
             scheduler = Schedulers.io();
         }
-
         return scheduler;
     }
-
-    public void setUserService(UsersService usersService) {
-        this.usersService = usersService;
-    }
-
-    public void setScheduler(Scheduler scheduler) {
-        this.scheduler = scheduler;
-    }
-
 }

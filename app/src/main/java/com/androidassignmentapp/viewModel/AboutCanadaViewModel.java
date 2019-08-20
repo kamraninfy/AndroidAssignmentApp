@@ -1,6 +1,6 @@
 package com.androidassignmentapp.viewModel;
 
-import android.arch.lifecycle.LiveData;
+import android.annotation.SuppressLint;
 import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.databinding.ObservableBoolean;
@@ -9,14 +9,12 @@ import android.databinding.ObservableInt;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 
 import com.androidassignmentapp.R;
 import com.androidassignmentapp.app.CustomApplication;
 import com.androidassignmentapp.database.CountryDatabase;
 import com.androidassignmentapp.database.constants.DbConstants;
-import com.androidassignmentapp.database.dao.CountryDao;
 import com.androidassignmentapp.database.entity.CountryEntity;
 import com.androidassignmentapp.database.entity.RowEntity;
 import com.androidassignmentapp.database.repository.CountryRepo;
@@ -34,7 +32,6 @@ import io.reactivex.CompletableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -46,36 +43,23 @@ import static com.androidassignmentapp.utils.Constant.RANDOM_USER_URL;
 
 public class AboutCanadaViewModel extends Observable {
 
-    private final CountryDatabase db;
-    CountryRepo countryRepo;
-
+    private CountryRepo countryRepo;
     public ObservableInt progressBar;
     public ObservableInt userRecycler;
     public ObservableInt userLabel;
-
     public ObservableField<String> messageLabel;
-
     public ObservableField<String> messageheader;
-
     private List<Row> userList;
     private Context context;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
-
     public ObservableBoolean isLoading;
-
-
-    //Room Database
-    private LiveData<List<CountryEntity>> mTasks;
-    private CountryDao mTaskDao;
-
 
     public AboutCanadaViewModel(@NonNull Context context) {
         this.context = context;
         this.userList = new ArrayList<>();
 
         //Database
-        db = Room.databaseBuilder(context, CountryDatabase.class, DbConstants.DB_NAME).build();
+        CountryDatabase db = Room.databaseBuilder(context, CountryDatabase.class, DbConstants.DB_NAME).build();
         countryRepo = new CountryRepository(db.countryDao());
 
         progressBar = new ObservableInt(View.GONE);
@@ -92,58 +76,42 @@ public class AboutCanadaViewModel extends Observable {
             initializeViews();
             fetchLocalApi();
         }
-
     }
 
 
     /**
      * Method which would fetch data locally if internet is not connected
      */
+    @SuppressLint("CheckResult")
     private void fetchLocalApi() {
+        countryRepo.getAllCountryInfo().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(countryEntity -> {
+            updateActionBartitle(countryEntity.getTitle());
 
-
-        countryRepo.getAllCountryInfo().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<CountryEntity>() {
-            @Override
-            public void accept(CountryEntity countryEntity) throws Exception {
-                updateActionBartitle(countryEntity.getTitle());
-
-                List<Row> rowList = new ArrayList<>();
-                for (int i = 0; i < countryEntity.getRows().size(); i++) {
-                    Row row = new Row();
-                    row.setTitle(countryEntity.getRows().get(i).getTitle());
-                    row.setDescription(countryEntity.getRows().get(i).getDescription());
-                    row.setImageHref(countryEntity.getRows().get(i).getImageHref() + "");
-                    rowList.add(row);
-                }
-
-                isLoading.set(false);
-
-                updateUserDataList(rowList);
-
-
-                progressBar.set(View.GONE);
-                userLabel.set(View.GONE);
-                userRecycler.set(View.VISIBLE);
-
+            List<Row> rowList = new ArrayList<>();
+            for (int i = 0; i < countryEntity.getRows().size(); i++) {
+                Row row = new Row();
+                row.setTitle(countryEntity.getRows().get(i).getTitle());
+                row.setDescription(countryEntity.getRows().get(i).getDescription());
+                row.setImageHref(countryEntity.getRows().get(i).getImageHref());
+                rowList.add(row);
             }
-        }, new Consumer<Throwable>() {
-            @Override
-            public void accept(Throwable throwable) throws Exception {
-                messageLabel.set(context.getString(R.string.error_message_loading_internet));
-                progressBar.set(View.GONE);
-                userLabel.set(View.VISIBLE);
-                userRecycler.set(View.GONE);
-            }
+
+            isLoading.set(false);
+            updateUserDataList(rowList);
+            progressBar.set(View.GONE);
+            userLabel.set(View.GONE);
+            userRecycler.set(View.VISIBLE);
+
+        }, throwable -> {
+            messageLabel.set(context.getString(R.string.error_message_loading_internet));
+            progressBar.set(View.GONE);
+            userLabel.set(View.VISIBLE);
+            userRecycler.set(View.GONE);
         });
     }
 
-    /*public void onClickFabToLoad(View view) {
-        initializeViews();
-        fetchListApi();
-    }*/
-
     //It is for initlialising views
-    public void initializeViews() {
+    private void initializeViews() {
         userLabel.set(View.GONE);
         userRecycler.set(View.GONE);
         progressBar.set(View.VISIBLE);
@@ -161,39 +129,22 @@ public class AboutCanadaViewModel extends Observable {
         Disposable disposable = usersService.fetchUsers(RANDOM_USER_URL)
                 .subscribeOn(customApplication.subscribeScheduler())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<CountryFactsModels>() {
-                    @Override
-                    public void accept(CountryFactsModels userResponse) throws Exception {
-
-
-                        insertIntoLocal(userResponse);
-
-
-                        isLoading.set(false);
-
-                        //Data Response
-                        updateActionBartitle(userResponse.getTitle());
-
-
-                        //
-                        updateUserDataList(userResponse.getRows());
-
-
-                        progressBar.set(View.GONE);
-                        userLabel.set(View.GONE);
-                        userRecycler.set(View.VISIBLE);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        isLoading.set(false);
-
-                        //Would be called when API throws an exception
-                        messageLabel.set(context.getString(R.string.error_message_loading_users));
-                        progressBar.set(View.GONE);
-                        userLabel.set(View.VISIBLE);
-                        userRecycler.set(View.GONE);
-                    }
+                .subscribe(userResponse -> {
+                    insertIntoLocal(userResponse);
+                    isLoading.set(false);
+                    //Data Response
+                    updateActionBartitle(userResponse.getTitle());
+                    updateUserDataList(userResponse.getRows());
+                    progressBar.set(View.GONE);
+                    userLabel.set(View.GONE);
+                    userRecycler.set(View.VISIBLE);
+                }, throwable -> {
+                    isLoading.set(false);
+                    //Would be called when API throws an exception
+                    messageLabel.set(context.getString(R.string.error_message_loading_users));
+                    progressBar.set(View.GONE);
+                    userLabel.set(View.VISIBLE);
+                    userRecycler.set(View.GONE);
                 });
 
         compositeDisposable.add(disposable);
@@ -207,42 +158,31 @@ public class AboutCanadaViewModel extends Observable {
      */
     private void insertIntoLocal(CountryFactsModels userResponse) {
 
-        Completable.fromAction(new Action() {
-            @Override
-            public void run() throws Exception {
-                CountryEntity countryEntity = new CountryEntity();
-                countryEntity.setTitle(userResponse.getTitle());
-
-
-                List<RowEntity> rowEntities = new ArrayList<>();
-
-                for (int i = 0; i < userResponse.getRows().size(); i++) {
-                    Row userRes = userResponse.getRows().get(i);
-                    if (userRes.getTitle() != null && userRes.getDescription() != null && userRes != null) {
-                        RowEntity rowEntity = new RowEntity();
-                        rowEntity.setTitle(userRes.getTitle());
-                        rowEntity.setDescription(userRes.getDescription());
-                        rowEntity.setImageHref(userRes.getImageHref() + "");
-                        rowEntities.add(rowEntity);
-                    }
+        Completable.fromAction(() -> {
+            CountryEntity countryEntity = new CountryEntity();
+            countryEntity.setTitle(userResponse.getTitle());
+            List<RowEntity> rowEntities = new ArrayList<>();
+            for (int i = 0; i < userResponse.getRows().size(); i++) {
+                Row row = userResponse.getRows().get(i);
+                if (row.getTitle() != null && row.getDescription() != null && row.getImageHref() != null) {
+                    RowEntity rowEntity = new RowEntity();
+                    rowEntity.setTitle(row.getTitle());
+                    rowEntity.setDescription(row.getDescription());
+                    rowEntity.setImageHref(row.getImageHref());
+                    rowEntities.add(rowEntity);
                 }
-
-                countryEntity.setRows(rowEntities);
-
-                countryRepo.saveCountryInfo(countryEntity);
-                //countryRepo.saveRowEntityInfo(rowEntities);
-
-
             }
+
+            countryEntity.setRows(rowEntities);
+            countryRepo.saveCountryInfo(countryEntity);
+
         }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(new CompletableObserver() {
             @Override
             public void onSubscribe(Disposable d) {
-
             }
 
             @Override
             public void onComplete() {
-
             }
 
             @Override
@@ -269,16 +209,13 @@ public class AboutCanadaViewModel extends Observable {
      * @param rowList List passed after reponse
      * @return Null removed List
      */
-    public List<Row> removedNullList(List<Row> rowList) {
+    private List<Row> removedNullList(List<Row> rowList) {
         List<Row> removed = new ArrayList<>();
-
         for (int i = 0; i < rowList.size(); i++) {
-
             if (!checkIfRowIsNull(rowList.get(i))) {
                 removed.add(rowList.get(i));
             }
         }
-
         return removed;
     }
 
@@ -291,11 +228,9 @@ public class AboutCanadaViewModel extends Observable {
      */
     private boolean checkIfRowIsNull(Row row) {
         boolean isRowNull = false;
-
         if (row.getTitle() == null && row.getDescription() == null && row.getImageHref() == null) {
             isRowNull = true;
         }
-
         return isRowNull;
     }
 
@@ -342,15 +277,11 @@ public class AboutCanadaViewModel extends Observable {
     public void onRefresh() {
         this.userList.clear();
         isLoading.set(true);
-
-
         if (isConnected()) {
             fetchListApi();
         } else {
             fetchLocalApi();
         }
-
     }
-
 }
 

@@ -1,6 +1,7 @@
 package com.androidassignmentapp.view.fragments;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +32,7 @@ public class AboutCanadaFragment extends Fragment implements Observer {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mContext = getActivity();
-
-
         View view = initDataBinding(inflater, container);
-
-
         setUpListOfUsersView(fragmentItemBinding.listUser);
         setUpObserver(aboutCanadaViewModel);
 
@@ -44,34 +42,52 @@ public class AboutCanadaFragment extends Fragment implements Observer {
 
     /**
      * Method which will initialise the data binding of particular view
-     * @param inflater
+     *
+     * @param inflater Layout inflater which is passed from OnCreateView in Fragment
      */
-    private View initDataBinding(LayoutInflater inflater,ViewGroup container) {
+    private View initDataBinding(LayoutInflater inflater, ViewGroup container) {
 
         View view = null;
         if (fragmentItemBinding == null) {
-
-            fragmentItemBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_item,container,false);
+            fragmentItemBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_item, container, false);
             view = fragmentItemBinding.getRoot();
             aboutCanadaViewModel = new AboutCanadaViewModel(mContext);
             fragmentItemBinding.setAboutCanadaViewModel(aboutCanadaViewModel);
         }
-
         return view;
-
     }
 
     // set up the list of user with recycler view
     private void setUpListOfUsersView(RecyclerView listUser) {
         AboutCanadaAdapter aboutCanadaAdapter = new AboutCanadaAdapter();
         listUser.setAdapter(aboutCanadaAdapter);
-        listUser.setLayoutManager(new LinearLayoutManager(mContext));
+        //listUser.setLayoutManager(new LinearLayoutManager(mContext));
+
+        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            listUser.setLayoutManager(new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL));
+        } else {
+            listUser.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL));
+        }
+
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            fragmentItemBinding.listUser.setLayoutManager(new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL));
+        } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            fragmentItemBinding.listUser.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL));
+        }
+
+
     }
 
     /**
      * Method which will add observer to observable
      *
-     * @param observable
+     * @param observable Method to add observer on onservable
      */
     public void setUpObserver(Observable observable) {
         observable.addObserver(this);
@@ -83,21 +99,11 @@ public class AboutCanadaFragment extends Fragment implements Observer {
         if (o instanceof AboutCanadaViewModel) {
             AboutCanadaAdapter aboutCanadaAdapter = (AboutCanadaAdapter) fragmentItemBinding.listUser.getAdapter();
             AboutCanadaViewModel aboutCanadaViewModel = (AboutCanadaViewModel) o;
+
             aboutCanadaAdapter.setUserList(aboutCanadaViewModel.getUserList());
         }
     }
 
-
-    /*    */
-
-    /**
-     * onDestroy Method - It would be called when activity is destroyed
-     *//*
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        aboutCanadaViewModel.reset();
-    }*/
     @Override
     public void onDestroy() {
         super.onDestroy();

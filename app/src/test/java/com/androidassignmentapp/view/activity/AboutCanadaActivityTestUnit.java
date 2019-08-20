@@ -27,7 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-
 public class AboutCanadaActivityTestUnit {
     private CountryDao countryDao;
     private CountryDatabase db;
@@ -37,6 +36,7 @@ public class AboutCanadaActivityTestUnit {
 
     @Before
     public void createDb() {
+
         db = Room.inMemoryDatabaseBuilder(context, CountryDatabase.class).build();
     }
 

@@ -5,7 +5,6 @@ import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 
 import com.androidassignmentapp.database.dao.CountryDao;
-import com.androidassignmentapp.database.dao.RowDao;
 import com.androidassignmentapp.database.entity.CountryEntity;
 import com.androidassignmentapp.database.entity.RowEntity;
 import com.androidassignmentapp.database.typeonverter.DataTypeConverter;
@@ -19,8 +18,5 @@ import com.androidassignmentapp.database.typeonverter.DataTypeConverter;
 public abstract class CountryDatabase extends RoomDatabase {
 
     public abstract CountryDao countryDao();
-
-    public abstract RowDao rowDao();
-
 
 }

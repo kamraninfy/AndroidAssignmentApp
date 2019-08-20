@@ -17,9 +17,7 @@ public class DataTypeConverter {
         if (data == null) {
             return Collections.emptyList();
         }
-
         Type listType = new TypeToken<List<RowEntity>>() {}.getType();
-
         return gson.fromJson(data, listType);
     }
 

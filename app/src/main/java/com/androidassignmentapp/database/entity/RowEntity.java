@@ -4,14 +4,12 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
 import com.androidassignmentapp.database.constants.DbConstants;
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
 @Entity(tableName = DbConstants.TABLE_NAME_ROW)
-public class RowEntity implements Serializable
-{
+public class RowEntity implements Serializable {
 
     @SerializedName("rowId")
     @PrimaryKey
@@ -26,10 +24,10 @@ public class RowEntity implements Serializable
     }
 
     @SerializedName("title")
-    
+
     private String title;
     @SerializedName("description")
-    
+
     private String description;
 
     public String getImageHref() {
@@ -41,8 +39,7 @@ public class RowEntity implements Serializable
     }
 
     @SerializedName("imageHref")
-    
-    //private Object imageHref;
+
     private String imageHref;
 
     public String getTitle() {
@@ -60,13 +57,5 @@ public class RowEntity implements Serializable
     public void setDescription(String description) {
         this.description = description;
     }
-
-    /*public Object getImageHref() {
-        return imageHref;
-    }
-
-    public void setImageHref(Object imageHref) {
-        this.imageHref = imageHref;
-    }*/
 
 }

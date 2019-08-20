@@ -32,13 +32,9 @@ public class AboutCanadaActivityTest {
 
 
     @Test
-    public void checkIfTextContains(){
-
+    public void checkIfTextContainsPress(){
         onView(withId(R.id.label_status)).check(matches(withText(containsString("Press"))));
     }
-
-
-
 
     @Test
     public void checkIfTextExistsInHierarchy(){
@@ -48,8 +44,6 @@ public class AboutCanadaActivityTest {
     @Test
     public void chekIfTextContainsInRecycler(){
         onView(withId(R.id.list_user)).check(matches(not(hasItem(hasDescendant(withText("ok"))))));
-
-
     }
 
     public static Matcher<View> hasItem(Matcher<View> matcher) {

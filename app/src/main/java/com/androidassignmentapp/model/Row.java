@@ -2,6 +2,7 @@
 package com.androidassignmentapp.model;
 
 import java.io.Serializable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -9,8 +10,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Class to handle the row class inside main model class to handle the  user response
  */
-public class Row implements Serializable
-{
+public class Row implements Serializable {
 
     @SerializedName("title")
     @Expose
@@ -20,7 +20,7 @@ public class Row implements Serializable
     private String description;
     @SerializedName("imageHref")
     @Expose
-    private Object imageHref;
+    private String imageHref;
     private final static long serialVersionUID = -8206941493222995489L;
 
     public String getTitle() {
@@ -39,12 +39,11 @@ public class Row implements Serializable
         this.description = description;
     }
 
-    public Object getImageHref() {
+    public String getImageHref() {
         return imageHref;
     }
 
-    public void setImageHref(Object imageHref) {
+    public void setImageHref(String imageHref) {
         this.imageHref = imageHref;
     }
-
 }

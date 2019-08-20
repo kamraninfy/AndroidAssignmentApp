@@ -3,6 +3,7 @@ package com.androidassignmentapp.model;
 
 import java.io.Serializable;
 import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -10,8 +11,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Class which will handle main response of API
  */
-public class CountryFactsModels implements Serializable
-{
+public class CountryFactsModels implements Serializable {
 
     @SerializedName("title")
     @Expose
@@ -33,8 +33,5 @@ public class CountryFactsModels implements Serializable
         return rows;
     }
 
-    public void setRows(List<Row> rows) {
-        this.rows = rows;
-    }
 
 }

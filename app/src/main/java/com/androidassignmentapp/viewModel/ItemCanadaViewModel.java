@@ -4,21 +4,15 @@ import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.BindingAdapter;
 import android.databinding.ObservableInt;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.androidassignmentapp.R;
 import com.androidassignmentapp.model.Row;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-
-import javax.sql.DataSource;
 
 /**
  * Row Item Class
@@ -38,16 +32,13 @@ public class ItemCanadaViewModel extends BaseObservable {
     }
 
     public String getProfileThumb() {
-
         if (user.getImageHref() != null) {
             noimagevisible.set(View.VISIBLE);
-            return user.getImageHref().toString();
+            return user.getImageHref();
         } else {
             noimagevisible.set(View.GONE);
             return "";
         }
-
-
     }
 
     // Loading Image using Glide Library.
@@ -57,17 +48,13 @@ public class ItemCanadaViewModel extends BaseObservable {
         Glide.with(imageView.getContext()).load(url).listener(new RequestListener<String, GlideDrawable>() {
             @Override
             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-
                 imageView.setVisibility(View.GONE);
-
                 return false;
             }
 
             @Override
             public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-
                 imageView.setVisibility(View.VISIBLE);
-
                 return false;
             }
         }).into(imageView);
@@ -87,11 +74,9 @@ public class ItemCanadaViewModel extends BaseObservable {
      * On Item Click of Row Item
      */
     public void onItemClick(View v) {
-
         if (user.getTitle() != null) {
             showToast(user.getTitle());
         }
-
     }
 
 

@@ -9,8 +9,7 @@ import com.androidassignmentapp.database.constants.DbConstants;
 import com.androidassignmentapp.database.entity.CountryEntity;
 
 /**
- * File Description
- * Dao File
+ * Dao File - Data Access Object interface
  */
 @Dao
 public interface CountryDao {
