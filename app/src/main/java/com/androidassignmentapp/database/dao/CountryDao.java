@@ -17,7 +17,7 @@ public interface CountryDao {
     CountryEntity getCountryInformation();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void saveAboutCountry(CountryEntity saveCountryEntity);
+    long saveAboutCountry(CountryEntity saveCountryEntity);
 
 
 }

@@ -12,4 +12,5 @@ public class AboutCanadaFragmentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_canada);
     }
+
 }

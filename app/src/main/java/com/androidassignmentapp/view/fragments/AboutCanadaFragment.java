@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +36,6 @@ public class AboutCanadaFragment extends Fragment implements Observer {
         View view = initDataBinding(inflater, container);
         setUpListOfUsersView(fragmentItemBinding.listUser);
         setUpObserver(aboutCanadaViewModel);
-
         return view;
     }
 
