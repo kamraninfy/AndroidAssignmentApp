@@ -11,14 +11,19 @@ import java.io.Serializable;
 @Entity(tableName = DbConstants.TABLE_NAME_ROW)
 public class RowEntity implements Serializable {
 
+
     @SerializedName("rowId")
     @PrimaryKey
+    @SuppressWarnings("unused")
     private int rowId;
 
+    //Warnings are suppressed as it was required to be created inside first table from CountryEntity Model
+    @SuppressWarnings("unused")
     public int getRowId() {
         return rowId;
     }
 
+    @SuppressWarnings("unused")
     public void setRowId(int rowId) {
         this.rowId = rowId;
     }

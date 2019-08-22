@@ -72,7 +72,9 @@ public class ItemCanadaViewModel extends BaseObservable {
 
     /**
      * On Item Click of Row Item
+     * @param v parameter view is the view of row click - Used from XML
      */
+    @SuppressWarnings("unused")
     public void onItemClick(View v) {
         if (user.getTitle() != null) {
             showToast(user.getTitle());

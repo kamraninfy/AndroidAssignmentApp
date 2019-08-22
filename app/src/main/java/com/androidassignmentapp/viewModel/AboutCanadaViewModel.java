@@ -3,14 +3,12 @@ package com.androidassignmentapp.viewModel;
 import android.annotation.SuppressLint;
 import android.arch.persistence.room.Room;
 import android.content.Context;
-import android.database.Cursor;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 
 import com.androidassignmentapp.R;
@@ -44,7 +42,6 @@ import static com.androidassignmentapp.utils.Constant.RANDOM_USER_URL;
 
 public class AboutCanadaViewModel extends Observable {
 
-    private final CountryDatabase mDatabase;
     private CountryRepo countryRepo;
     public ObservableInt progressBar;
     public ObservableInt userRecycler;
@@ -59,18 +56,26 @@ public class AboutCanadaViewModel extends Observable {
     public AboutCanadaViewModel(@NonNull Context context) {
         this.context = context;
         this.userList = new ArrayList<>();
-
-        //Database
-        mDatabase = Room.databaseBuilder(context, CountryDatabase.class, DbConstants.DB_NAME).build();
-        countryRepo = new CountryRepository(mDatabase.countryDao());
-
         progressBar = new ObservableInt(View.GONE);
         userRecycler = new ObservableInt(View.GONE);
         userLabel = new ObservableInt(View.VISIBLE);
         messageLabel = new ObservableField<>(context.getString(R.string.default_message_loading_users));
         messageheader = new ObservableField<>(context.getString(R.string.app_name));
         isLoading = new ObservableBoolean();
+    }
 
+    /**
+     * Database Creation
+     */
+    public void createDatabase() {
+        CountryDatabase mDatabase = Room.databaseBuilder(context, CountryDatabase.class, DbConstants.DB_NAME).build();
+        countryRepo = new CountryRepository(mDatabase.countryDao());
+    }
+
+    /**
+     * fetch Data from Local Database
+     */
+    public void fetchLOCAL() {
         initializeViews();
         fetchLocalApi();
     }
@@ -81,7 +86,9 @@ public class AboutCanadaViewModel extends Observable {
      */
     @SuppressLint("CheckResult")
     private void fetchLocalApi() {
-        countryRepo.getAllCountryInfo().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(countryEntity -> {
+        Disposable disposable = countryRepo.getAllCountryInfo().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(countryEntity -> {
+
+            this.userList.clear();
             updateActionBartitle(countryEntity.getTitle());
 
             List<Row> rowList = new ArrayList<>();
@@ -102,7 +109,6 @@ public class AboutCanadaViewModel extends Observable {
 
             //This would call API in background if internet is connected
             if (isConnected()) {
-
                 fetchListApi();
             }
 
@@ -121,6 +127,8 @@ public class AboutCanadaViewModel extends Observable {
                 }
             }
         });
+
+        compositeDisposable.add(disposable);
     }
 
     //It is for initlialising views
@@ -180,7 +188,7 @@ public class AboutCanadaViewModel extends Observable {
             List<RowEntity> rowEntities = new ArrayList<>();
             for (int i = 0; i < userResponse.getRows().size(); i++) {
                 Row row = userResponse.getRows().get(i);
-                if (!checkIfRowIsNull(row)) {
+                if (checkIfRowIsNull(row)) {
                     RowEntity rowEntity = new RowEntity();
                     rowEntity.setTitle(row.getTitle());
                     rowEntity.setDescription(row.getDescription());
@@ -229,7 +237,7 @@ public class AboutCanadaViewModel extends Observable {
     private List<Row> removedNullList(List<Row> rowList) {
         List<Row> removed = new ArrayList<>();
         for (int i = 0; i < rowList.size(); i++) {
-            if (!checkIfRowIsNull(rowList.get(i))) {
+            if (checkIfRowIsNull(rowList.get(i))) {
                 removed.add(rowList.get(i));
             }
         }
@@ -244,11 +252,7 @@ public class AboutCanadaViewModel extends Observable {
      * @return Would return true if all items are null
      */
     private boolean checkIfRowIsNull(Row row) {
-        boolean isRowNull = false;
-        if (row.getTitle() == null && row.getDescription() == null && row.getImageHref() == null) {
-            isRowNull = true;
-        }
-        return isRowNull;
+        return row.getTitle() != null || row.getDescription() != null || row.getImageHref() != null;
     }
 
 
@@ -263,7 +267,6 @@ public class AboutCanadaViewModel extends Observable {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo nInfo = cm.getActiveNetworkInfo();
             connected = nInfo != null && nInfo.isAvailable() && nInfo.isConnected();
-            return connected;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -292,7 +295,6 @@ public class AboutCanadaViewModel extends Observable {
 
     /* Needs to be public for Databinding */
     public void onRefresh() {
-        //this.userList.clear();
         isLoading.set(true);
         if (isConnected()) {
             fetchListApi();

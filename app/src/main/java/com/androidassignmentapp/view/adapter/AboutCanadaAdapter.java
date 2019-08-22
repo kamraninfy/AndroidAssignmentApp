@@ -27,10 +27,12 @@ public class AboutCanadaAdapter extends RecyclerView.Adapter<AboutCanadaAdapter.
         this.userList = Collections.emptyList();
     }
 
+
+
     @NonNull
     @Override
+    @SuppressWarnings("NullableProblems")
     public UserAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent,@NonNull int viewType) {
-
         ItemCanadaBinding itemUserBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_canada_, parent, false);
         return new UserAdapterViewHolder(itemUserBinding);
     }
@@ -38,8 +40,8 @@ public class AboutCanadaAdapter extends RecyclerView.Adapter<AboutCanadaAdapter.
 
     @NonNull
     @Override
+    @SuppressWarnings("NullableProblems")
     public void onBindViewHolder(@NonNull UserAdapterViewHolder holder,@NonNull int position) {
-        //Sets Data
         holder.bindUser(userList.get(position));
     }
 

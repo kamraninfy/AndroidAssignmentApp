@@ -2,6 +2,7 @@ package com.androidassignmentapp.view.fragments;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,12 +46,13 @@ public class AboutCanadaFragment extends Fragment implements Observer {
      * @param inflater Layout inflater which is passed from OnCreateView in Fragment
      */
     private View initDataBinding(LayoutInflater inflater, ViewGroup container) {
-
         View view = null;
         if (fragmentItemBinding == null) {
             fragmentItemBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_item, container, false);
             view = fragmentItemBinding.getRoot();
             aboutCanadaViewModel = new AboutCanadaViewModel(mContext);
+            aboutCanadaViewModel.createDatabase();
+            aboutCanadaViewModel.fetchLOCAL();
             fragmentItemBinding.setAboutCanadaViewModel(aboutCanadaViewModel);
         }
         return view;
@@ -61,14 +62,20 @@ public class AboutCanadaFragment extends Fragment implements Observer {
     private void setUpListOfUsersView(RecyclerView listUser) {
         AboutCanadaAdapter aboutCanadaAdapter = new AboutCanadaAdapter();
         listUser.setAdapter(aboutCanadaAdapter);
-        //listUser.setLayoutManager(new LinearLayoutManager(mContext));
+        handlingLayoutManager(listUser);
+    }
 
-        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            listUser.setLayoutManager(new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL));
-        } else {
-            listUser.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL));
+    private void handlingLayoutManager(RecyclerView listUser) {
+        if (getActivity() != null) {
+            Resources resources = getActivity().getResources();
+            if (resources != null) {
+                if (resources.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    listUser.setLayoutManager(new StaggeredGridLayoutManager(1, LinearLayoutManager.VERTICAL));
+                } else {
+                    listUser.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL));
+                }
+            }
         }
-
     }
 
     @Override
@@ -80,8 +87,6 @@ public class AboutCanadaFragment extends Fragment implements Observer {
         } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             fragmentItemBinding.listUser.setLayoutManager(new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL));
         }
-
-
     }
 
     /**
@@ -100,7 +105,8 @@ public class AboutCanadaFragment extends Fragment implements Observer {
             AboutCanadaAdapter aboutCanadaAdapter = (AboutCanadaAdapter) fragmentItemBinding.listUser.getAdapter();
             AboutCanadaViewModel aboutCanadaViewModel = (AboutCanadaViewModel) o;
 
-            aboutCanadaAdapter.setUserList(aboutCanadaViewModel.getUserList());
+            if (aboutCanadaAdapter != null)
+                aboutCanadaAdapter.setUserList(aboutCanadaViewModel.getUserList());
         }
     }
 
